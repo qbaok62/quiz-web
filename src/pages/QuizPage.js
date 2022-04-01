@@ -1,10 +1,11 @@
-import axios from "../api/axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "../api/axios";
 import Question from "../components/Question/Question";
 
 const QuizPage = () => {
   const [questions, setQuestions] = useState([]);
+  const [score, setScore] = useState(0);
   const accessToken = useSelector((state) => state.auth.accessToken);
 
   useEffect(() => {
@@ -27,7 +28,11 @@ const QuizPage = () => {
   console.log(questions);
 
   return (
-    <div>{questions.length > 0 && <Question questions={questions} />}</div>
+    <div>
+      {questions.length > 0 && (
+        <Question questions={questions} score={score} setScore={setScore} />
+      )}
+    </div>
   );
 };
 
