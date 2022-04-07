@@ -1,7 +1,7 @@
 import "antd/dist/antd.min.css";
 import { Row, Col, Divider, Button } from "antd";
-import { Outlet, useNavigate, Link } from "react-router-dom";
-import Logout from "../components/auth/logout";
+import { Outlet, useNavigate } from "react-router-dom";
+import Logout from "../components/logout/logout";
 import { useSelector } from "react-redux";
 import { selectAccessToken } from "../redux/auth/auth.selector";
 

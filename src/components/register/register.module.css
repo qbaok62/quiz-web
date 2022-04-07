@@ -1,0 +1,13 @@
+.form {
+  max-width: 300px;
+  margin: 16px auto;
+}
+.button {
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.change {
+  color: #1890ff;
+  cursor: pointer;
+}

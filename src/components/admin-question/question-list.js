@@ -1,6 +1,6 @@
 import useApi from "../../custom-hook/useApi";
 import axios from "../../api/axios";
-import { Button, Form, Input, message, Modal, Spin, Table } from "antd";
+import { Button, Input, message, Modal, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { selectAccessToken } from "../../redux/auth/auth.selector";
@@ -112,17 +112,16 @@ const QuestionList = () => {
     },
   ];
 
-  const onAddQuestion = (e) => {
-    console.log(e);
+  const onAddQuestion = (record) => {
     axios
-      .post("/v1/questions/edit", e, {
+      .post("/v1/questions/edit", record, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then(({ data }) => {
         setDataSource([...dataSource, data]);
         message.success("Add Successful");
       })
-      .catch((error) => message.error("Add Failed"));
+      .catch((error) => message.error(error.response.data.message));
   };
 
   const onDeleteQuestion = (record) => {
@@ -142,7 +141,6 @@ const QuestionList = () => {
   };
 
   const onEditQuestion = (record) => {
-    console.log(record);
     setIsEditing(true);
     setEditingQuestion({ ...record });
   };

@@ -1,5 +1,5 @@
 import "antd/dist/antd.min.css";
-import style from "./login.module.css";
+import style from "./register.module.css";
 import { MailOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";

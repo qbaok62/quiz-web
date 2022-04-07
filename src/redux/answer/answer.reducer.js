@@ -25,7 +25,6 @@ const answerSlice = createSlice({
       }
     },
     retry(state) {
-      console.log("retry: ");
       state.answers = [];
     },
   },

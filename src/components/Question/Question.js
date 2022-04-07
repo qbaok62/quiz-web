@@ -1,5 +1,5 @@
 import style from "./question.module.css";
-import { Button, Col, Divider, Row } from "antd";
+import { Button, Col, Divider, message, Row } from "antd";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,25 +12,23 @@ import {
 import { submitAnswer } from "../../redux/auth/auth.action";
 
 const Question = ({ questions }) => {
+  const [clicked, setClicked] = useState(false);
   const [selected, setSelected] = useState();
   const [index, setIndex] = useState(0);
   const dispatch = useDispatch();
-  const [clicked, setClicked] = useState(false);
+  const navigate = useNavigate();
   const submitLoading = useSelector(selectSubmitLoading);
   const accessToken = useSelector(selectAccessToken);
   const userAnswers = useSelector(selectCurrentAnswer);
   const question = questions && questions[index];
   const answerId = questions && question.id;
-  const navigate = useNavigate();
   const serverAnswers = [
     question.answer1,
     question.answer2,
     question.answer3,
     question.answer4,
   ];
-  console.log("userAnswer:", userAnswers);
 
-  console.log(index);
   useEffect(() => {
     setSelected("");
   }, [index]);
@@ -42,9 +40,8 @@ const Question = ({ questions }) => {
 
   const saveHandler = () => {
     if (selected === "") {
-      alert("You have to choose the answer");
+      message.error("You have to choose the answer");
     } else {
-      // setSelected(question.question);
       dispatch(saveAnswer({ id: answerId, answer: selected }));
       setClicked(false);
       if (index < questions.length - 1) {
@@ -62,9 +59,6 @@ const Question = ({ questions }) => {
 
   const skipHandler = () => {
     setIndex((prevIndex) => prevIndex + 1);
-    if (userAnswers.filter((answer) => answer.id === answerId).length === 0) {
-      dispatch(saveAnswer({ id: answerId, answer: "testing" }));
-    }
     setClicked(false);
   };
 

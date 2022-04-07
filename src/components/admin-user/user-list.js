@@ -7,7 +7,6 @@ import { EditOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { selectAccessToken } from "../../redux/auth/auth.selector";
 import { useSelector } from "react-redux";
-import UpdateForm from "./update-user";
 
 let init = true;
 const UserList = () => {
@@ -106,20 +105,19 @@ const UserList = () => {
   ];
 
   const onAddUser = async (record) => {
-    try {
-      const { data } = await axios.post("/v1/users", record, {
+    axios
+      .post("/v1/users", record, {
         headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      setDataSource(...dataSource, data);
-      message.success("Add Successful");
-    } catch (error) {
-      message.error("Add Failed");
-    }
+      })
+      .then(({ data }) => {
+        setDataSource([...dataSource, data]);
+        message.success("Add Successful");
+      })
+      .catch((error) => message.error(error.response.data.message));
   };
 
   const onEditUser = (record) => {
     setIsEditing(true);
-    console.log("record:", record);
     setEditingUser({ ...record });
   };
 
@@ -133,22 +131,14 @@ const UserList = () => {
       <Button onClick={() => setVisible(!visible)}>Add a new User</Button>
       {visible && <AddForm onAddUser={onAddUser} />}
       <Table
-        columns={columns}
-        dataSource={data}
         rowKey={(obj) => obj.id}
+        columns={columns}
+        dataSource={dataSource}
         pagination={{ position: ["top"] }}
         loading={loading}
       />
-      <UpdateForm
-        isEditing={isEditing}
-        resetEditing={resetEditing}
-        editingUser={editingUser}
-        setEditingUser={setEditingUser}
-        setDataSource={setDataSource}
-        accessToken={accessToken}
-      />
 
-      {/* <Modal
+      <Modal
         title="Edit User"
         visible={isEditing}
         okText="Save"
@@ -161,7 +151,9 @@ const UserList = () => {
               if (user.id === editingUser.id) {
                 const newObj = { ...editingUser };
                 delete newObj.id;
-                axios.patch(`/v1/users/edit/${user.id}`, newObj, {
+                delete newObj.score;
+                delete newObj.isEmailVerified;
+                axios.patch(`/v1/users/${user.id}`, newObj, {
                   headers: { Authorization: `Bearer ${accessToken}` },
                 });
                 return editingUser;
@@ -209,7 +201,7 @@ const UserList = () => {
             });
           }}
         />
-      </Modal> */}
+      </Modal>
     </>
   );
 };

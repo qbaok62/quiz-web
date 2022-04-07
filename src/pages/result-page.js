@@ -12,6 +12,7 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const retryHandler = () => {
     dispatch(retry());
+    navigate("/quiz");
   };
 
   const backHandler = () => {

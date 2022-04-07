@@ -6,8 +6,8 @@ import { refresh } from "./redux/auth/auth.action";
 import { useEffect } from "react";
 import { getQuestion } from "./redux/question/question.action";
 import Navigation from "./pages/navigation";
-import Login from "./components/auth/login";
-import Register from "./components/auth/register";
+import Login from "./components/login/login";
+import Register from "./components/register/register";
 import ResultPage from "./pages/result-page";
 import QuizPage from "./pages/quiz-page";
 import {
