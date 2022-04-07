@@ -1,39 +1,117 @@
-import { Button } from "antd";
-import { useState } from "react";
+import style from "./question.module.css";
+import { Button, Col, Divider, Row } from "antd";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentAnswer } from "../../redux/answer/answerselector";
+import { saveAnswer } from "../../redux/answer/answer.reducer";
+import {
+  selectAccessToken,
+  selectSubmitLoading,
+} from "../../redux/auth/auth.selector";
+import { submitAnswer } from "../../redux/auth/auth.action";
 
-const Question = ({ questions, score, setScore }) => {
+const Question = ({ questions }) => {
+  const [selected, setSelected] = useState();
   const [index, setIndex] = useState(0);
-  const question = questions && questions[index].question;
+  const dispatch = useDispatch();
+  const [clicked, setClicked] = useState(false);
+  const submitLoading = useSelector(selectSubmitLoading);
+  const accessToken = useSelector(selectAccessToken);
+  const userAnswers = useSelector(selectCurrentAnswer);
+  const question = questions && questions[index];
+  const answerId = questions && question.id;
+  const navigate = useNavigate();
+  const serverAnswers = [
+    question.answer1,
+    question.answer2,
+    question.answer3,
+    question.answer4,
+  ];
+  console.log("userAnswer:", userAnswers);
+
+  console.log(index);
+  useEffect(() => {
+    setSelected("");
+  }, [index]);
+
+  const handleCheck = (i) => {
+    setSelected(i);
+    setClicked(true);
+  };
+
+  const saveHandler = () => {
+    if (selected === "") {
+      alert("You have to choose the answer");
+    } else {
+      // setSelected(question.question);
+      dispatch(saveAnswer({ id: answerId, answer: selected }));
+      setClicked(false);
+      if (index < questions.length - 1) {
+        setIndex((prevIndex) => prevIndex + 1);
+      } else {
+        dispatch(submitAnswer(userAnswers, accessToken, navigate));
+      }
+    }
+  };
 
   const backHandler = () => {
     setIndex((prevIndex) => prevIndex - 1);
+    setClicked(false);
   };
 
-  const nextHandler = () => {
-    setIndex((prevIndex) => prevIndex + 1);
-  };
-
-  const saveHandler = () => {};
   const skipHandler = () => {
     setIndex((prevIndex) => prevIndex + 1);
+    if (userAnswers.filter((answer) => answer.id === answerId).length === 0) {
+      dispatch(saveAnswer({ id: answerId, answer: "testing" }));
+    }
+    setClicked(false);
   };
+
   return (
     <div>
-      <div>{question}</div>
+      <p>
+        Question {index + 1}/{questions.length}
+      </p>
       <div>
-        {index > 0 ? (
-          <Button onClick={backHandler}>Back</Button>
-        ) : (
-          <Button disabled>Back</Button>
-        )}
-        <Button onClick={nextHandler}>Next</Button>
-        <Button onClick={saveHandler}>Save</Button>
-        {index < questions.length - 1 ? (
-          <Button onClick={nextHandler}>Next</Button>
-        ) : (
-          <Button disabled>Next</Button>
-        )}
+        <div className={style.question}>{question.question}</div>
+        <Row gutter={[16, 16]}>
+          {questions &&
+            serverAnswers.map((i) => {
+              return (
+                <Col key={i} span={12}>
+                  <Button
+                    key={i}
+                    className={style.button}
+                    type={
+                      (questions &&
+                        !clicked &&
+                        i === userAnswers[index]?.correctanswer) ||
+                      selected === i
+                        ? "primary"
+                        : "default"
+                    }
+                    onClick={() => handleCheck(i)}
+                  >
+                    {i}
+                  </Button>
+                </Col>
+              );
+            })}
+        </Row>
       </div>
+      <Divider />
+      <Row justify="space-between">
+        <Button onClick={backHandler} disabled={!index}>
+          Back
+        </Button>
+        <Button onClick={saveHandler} loading={submitLoading}>
+          {index < questions.length - 1 ? "Save and Next" : "Submit"}
+        </Button>
+        <Button onClick={skipHandler} disabled={index === questions.length - 1}>
+          Skip
+        </Button>
+      </Row>
     </div>
   );
 };

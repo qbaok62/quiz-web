@@ -1,0 +1,23 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.avatar {
+  display: block;
+  width: 10%;
+  flex: 1;
+}
+
+.name {
+  margin: auto;
+  font-weight: bold;
+}

@@ -1,44 +1,48 @@
 import "antd/dist/antd.min.css";
-import style from "./Login.module.css";
+import style from "./login.module.css";
 import { MailOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { register } from "../../redux/auth/auth.middleware";
-import { Form, Input, Button } from "antd";
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../../redux/auth/auth.action";
+import { Form, Input, Button, Row } from "antd";
+import { useNavigate } from "react-router-dom";
+import { selectLoading } from "../../redux/auth/auth.selector";
+import { Typography } from "antd";
 
-const Register = (props) => {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const dispatch = useDispatch();
+const { Title } = Typography;
+
+const Register = () => {
+  const [form] = Form.useForm();
+  const loading = useSelector(selectLoading);
   const userRef = useRef();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     userRef.current.focus();
   }, []);
 
   const submitHandler = (event) => {
-    event.preventDefault();
-
-    dispatch(register({ name, password, email }));
-
-    setName("");
-    setEmail("");
-    setPassword("");
+    dispatch(register(event, form));
   };
 
   const changeHandler = () => {
-    props.onToggle();
+    navigate("/login");
   };
 
   return (
     <Form
+      form={form}
       name="normal_login"
       className={style.form}
       initialValues={{
         remember: true,
       }}
+      onFinish={submitHandler}
     >
+      <Row justify="center">
+        <Title level={2}>Create a new account</Title>
+      </Row>
       <Form.Item
         name="email"
         rules={[
@@ -54,8 +58,6 @@ const Register = (props) => {
           prefix={<MailOutlined className="site-form-item-icon" />}
           placeholder="Email"
           ref={userRef}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
         />
       </Form.Item>
       <Form.Item
@@ -72,8 +74,6 @@ const Register = (props) => {
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
           placeholder="Username"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
         />
       </Form.Item>
       <Form.Item
@@ -90,8 +90,6 @@ const Register = (props) => {
           prefix={<LockOutlined className="site-form-item-icon" />}
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
         />
       </Form.Item>
 
@@ -100,7 +98,7 @@ const Register = (props) => {
           type="primary"
           htmlType="submit"
           className={style.button}
-          onClick={submitHandler}
+          loading={loading}
         >
           SIGN UP
         </Button>
