@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { selectAccessToken } from "../../redux/auth/auth.selector";
 import { useSelector } from "react-redux";
 
-let init = true;
 const UserList = () => {
   const { loading, data } = useApi("/v1/users?limit=200");
   const [visible, setVisible] = useState(false);
@@ -18,10 +17,9 @@ const UserList = () => {
   const accessToken = useSelector(selectAccessToken);
 
   useEffect(() => {
-    if (init) {
-      return (init = false);
+    if (data) {
+      setDataSource(data);
     }
-    setDataSource(data);
   }, [data]);
 
   const columns = [
@@ -104,7 +102,7 @@ const UserList = () => {
     },
   ];
 
-  const onAddUser = async (record) => {
+  const onAddUser = (record) => {
     axios
       .post("/v1/users", record, {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -165,6 +163,7 @@ const UserList = () => {
           resetEditing();
         }}
       >
+        <div>Username</div>
         <Input
           placeholder="Username"
           value={editingUser?.username}
@@ -174,6 +173,7 @@ const UserList = () => {
             });
           }}
         />
+        <div>Avatar</div>
         <Input
           placeholder="Avatar"
           value={editingUser?.avatar}
@@ -183,6 +183,7 @@ const UserList = () => {
             });
           }}
         />
+        <div>Email</div>
         <Input
           placeholder="Email"
           value={editingUser?.email}
@@ -192,6 +193,7 @@ const UserList = () => {
             });
           }}
         />
+        <div>Role</div>
         <Input
           placeholder="Role"
           value={editingUser?.role}

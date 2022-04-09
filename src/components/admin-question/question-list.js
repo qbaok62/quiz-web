@@ -18,13 +18,10 @@ const QuestionList = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (init) {
-      return (init = false);
+    if (data) {
+      setDataSource(data);
     }
-    setDataSource(data);
   }, [data]);
-
-  console.log("dataSource:", dataSource);
 
   const columns = [
     {
